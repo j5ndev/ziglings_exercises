@@ -25,10 +25,7 @@ pub fn main() void {
 fn addFive(n: u32) MyNumberError!u32 {
     // This function needs to return any error which might come back from detect().
     // Please use a "try" statement rather than a "catch".
-    //
-    const x = detect(n);
-
-    return x + 5;
+    return try detect(n) + 5;
 }
 
 fn detect(n: u32) MyNumberError!u32 {
