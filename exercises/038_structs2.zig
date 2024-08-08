@@ -33,15 +33,13 @@ pub fn main() void {
         .experience = 10,
     };
 
-    // Please add "Zump the Loud" with the following properties:
-    //
-    //     role       bard
-    //     gold       10
-    //     health     100
-    //     experience 20
-    //
-    // Feel free to run this program without adding Zump. What does
-    // it do and why?
+    // Zump the Loud
+    chars[1] = Character{
+        .role = Role.bard,
+        .gold = 10,
+        .health = 100,
+        .experience = 20,
+    };
 
     // Printing all RPG characters in a loop:
     for (chars, 0..) |c, num| {
