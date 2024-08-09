@@ -17,6 +17,7 @@ pub fn main() void {
     // the zen12 string (the REAL nature of strings will be
     // revealed when we've learned some additional features):
     const zen12: *const [21]u8 = "Memory is a resource.";
+
     //
     //   It would also have been valid to coerce to a slice:
     //         const zen12: []const u8 = "...";
