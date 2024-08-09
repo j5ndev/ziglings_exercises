@@ -58,9 +58,8 @@ pub fn main() void {
 
     std.debug.print("Insect report! ", .{});
 
-    // Oops! We've made a mistake here.
-    printInsect(ant, AntOrBee.c);
-    printInsect(bee, AntOrBee.c);
+    printInsect(ant, AntOrBee.a);
+    printInsect(bee, AntOrBee.b);
 
     std.debug.print("\n", .{});
 }
