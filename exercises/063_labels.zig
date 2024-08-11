@@ -51,7 +51,7 @@
 //     }
 //
 const print = @import("std").debug.print;
-
+const eql = @import("std").mem.eql;
 // As mentioned before, we'll soon understand why these two
 // numbers don't need explicit types. Hang in there!
 const ingredients = 4;
@@ -69,12 +69,12 @@ const Food = struct {
 //  Pasta                     x          x
 //  Cheesy Chili     x                              x
 // ------------------------------------------------------
-
-const menu: [foods]Food = [_]Food{
-    Food{
+const mac_n_cheese = Food {
         .name = "Mac & Cheese",
         .requires = [ingredients]bool{ false, true, false, true },
-    },
+    };
+const menu: [foods]Food = [_]Food{
+    mac_n_cheese,
     Food{
         .name = "Chili Mac",
         .requires = [ingredients]bool{ true, true, false, false },
@@ -103,7 +103,7 @@ pub fn main() void {
     const wanted_ingredients = [_]u8{ 0, 3 }; // Chili, Cheese
 
     // Look at each Food on the menu...
-    const meal = food_loop: for (menu) |food| {
+    const meal: Food = food_loop: for (menu) |food| {
 
         // Now look at each required ingredient for the Food...
         for (food.requires, 0..) |required, required_ingredient| {
@@ -128,8 +128,8 @@ pub fn main() void {
         // wanted for this Food.
         //
         // Please return this Food from the loop.
-        break;
-    };
+        break food;
+    } else mac_n_cheese;
     // ^ Oops! We forgot to return Mac & Cheese as the default
     // Food when the requested ingredients aren't found.
 
