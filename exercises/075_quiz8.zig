@@ -7,7 +7,8 @@
 // explanatory comments. And we're only going to change one part
 // of it.
 //
-const print = @import("std").debug.print;
+const std = @import("std");
+const print = std.debug.print;
 
 const TripError = error{ Unreachable, EatenByAGrue };
 
@@ -58,12 +59,12 @@ fn makePath(from: *Place, to: *Place, dist: u8) Path {
 
 // Using our new function, these path definitions take up considerably less
 // space in our program now!
-const a_paths = [_]Path{makePath(&a, &b, 2)};
-const b_paths = [_]Path{ makePath(&b, &a, 2), makePath(&b, &d, 1) };
-const c_paths = [_]Path{ makePath(&c, &d, 3), makePath(&c, &e, 2) };
-const d_paths = [_]Path{ makePath(&d, &b, 1), makePath(&d, &c, 3), makePath(&d, &f, 7) };
-const e_paths = [_]Path{ makePath(&e, &c, 2), makePath(&e, &f, 1) };
-const f_paths = [_]Path{makePath(&f, &d, 7)};
+// const a_paths = [_]Path{makePath(&a, &b, 2)};
+// const b_paths = [_]Path{ makePath(&b, &a, 2), makePath(&b, &d, 1) };
+// const c_paths = [_]Path{ makePath(&c, &d, 3), makePath(&c, &e, 2) };
+// const d_paths = [_]Path{ makePath(&d, &b, 1), makePath(&d, &c, 3), makePath(&d, &f, 7) };
+// const e_paths = [_]Path{ makePath(&e, &c, 2), makePath(&e, &f, 1) };
+// const f_paths = [_]Path{makePath(&f, &d, 7)};
 //
 // But is it more readable? That could be argued either way.
 //
@@ -80,6 +81,17 @@ const f_paths = [_]Path{makePath(&f, &d, 7)};
 //    ...
 //
 // Feel free to implement something like that as a SUPER BONUS EXERCISE!
+var buffer: [432]u8 = undefined;
+var fba = std.heap.FixedBufferAllocator.init(&buffer);
+const allocator = fba.allocator();
+const instructions = [_][]const u8 {
+    "a -> (b[2])",
+    "b -> (a[2] d[1])",
+    "c -> (d[3] e[2])",
+    "d -> (b[1] c[3] f[7])",
+    "e -> (c[2] f[1])",
+    "f -> (d[7])",
+};
 
 const TripItem = union(enum) {
     place: *const Place,
@@ -169,9 +181,33 @@ pub fn main() void {
     //
     // or this comptime wizardry:
     //
-    const letters = [_][]const u8{ "a", "b", "c", "d", "e", "f" };
-    inline for (letters) |letter| {
-        @field(@This(), letter).paths = @field(@This(), letter ++ "_paths")[0..];
+    // const letters = [_][]const u8{ "a", "b", "c", "d", "e", "f" };
+    // inline for (letters) |letter| {
+    //     @field(@This(), letter).paths = @field(@This(), letter ++ "_paths")[0..];
+    // }
+
+    // This solution for the "SUPER BONUS EXERCISE" was informative, but there are some
+    // important notes:
+    //   1. The previous inline for was expanded to the equivalent of the code in the comment
+    //      but it was still executing at runtime.
+    //   2. The solution below keeps the paths defined on the stack (using the FixedBufferAllocator), 
+    //      but they are now defined at runtime unlike the original example.
+    // Pointers are limited at comptime, so I don't see a way to move the definitions
+    // back to comptime while still using the "path language".  I don't feel we accomplished
+    // much implmenting this "path lauguage" in a comptime discussion but I'll leave it as 
+    // an example of an experiment that provided insight.
+    
+    inline for (instructions) |instruction| {
+        const from_letter = instruction[0..1];
+        var paths = std.ArrayList(Path).init(allocator);
+        comptime var i = 6;
+        const this = @This();
+        inline while (i < instruction.len) : (i += 5) {
+            const to_letter = instruction[i..i+1];
+            const dist = instruction[i+2] - '0';
+            paths.append(makePath(&@field(this, from_letter), &@field(this, to_letter), dist)) catch unreachable;
+        }
+        @field(this, from_letter).paths = paths.toOwnedSlice() catch unreachable;
     }
 
     var notebook = HermitsNotebook{};
