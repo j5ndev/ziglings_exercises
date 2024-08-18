@@ -81,7 +81,8 @@ pub fn main() !void {
         defer handle1.join();
 
         // Second thread to calculate the minus numbers.
-        ???
+        const handle2 = try std.Thread.spawn(.{}, thread_pi, .{&pi_minus, 3, count});
+        defer handle2.join();
         
     }
     // Here we add up the results.
