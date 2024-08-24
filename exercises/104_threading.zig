@@ -88,7 +88,7 @@ pub fn main() !void {
     // Without these brackets, the program would not wait for the
     // end of the threads and they would continue to run beyond the
     // end of the program.
-    
+    {
         // Now we start the first thread, with the number as parameter
         const handle = try std.Thread.spawn(.{}, thread_function, .{1});
 
@@ -106,8 +106,9 @@ pub fn main() !void {
 
         // After the threads have been started,
         // they run in parallel and we can still do some work in between.
+        std.time.sleep(1500 * std.time.ns_per_ms);
         std.debug.print("Some weird stuff, after starting the threads.\n", .{});
-    
+    }
     // After we have left the closed area, we wait until
     // the threads have run through, if this has not yet been the case.
     std.debug.print("Zig is cool!\n", .{});
