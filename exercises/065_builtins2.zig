@@ -109,29 +109,16 @@ pub fn main() void {
     // Please complete these 'if' statements so that the field
     // name will not be printed if the field is of type 'void'
     // (which is a zero-bit type that takes up no space at all!):
-<<<<<<< HEAD
     if (fields[0].type != void) {
-        print(" {s}", .{@typeInfo(Narcissus).@"struct".fields[0].name});
-    }
-
-    if (fields[1].type != void) {
-        print(" {s}", .{@typeInfo(Narcissus).@"struct".fields[1].name});
-    }
-
-    if (fields[2].type != void) {
-        print(" {s}", .{@typeInfo(Narcissus).@"struct".fields[2].name});
-=======
-    if (fields[0].??? != void) {
         print(" {s}", .{fields[0].name});
     }
 
-    if (fields[1].??? != void) {
+    if (fields[1].type != void) {
         print(" {s}", .{fields[1].name});
     }
 
-    if (fields[2].??? != void) {
+    if (fields[2].type != void) {
         print(" {s}", .{fields[2].name});
->>>>>>> main
     }
 
     // Yuck, look at all that repeated code above! I don't know
